@@ -41,6 +41,7 @@
 
         </div>
       </div>
+      <VariantSelector :sku="sku"/>
       <AddToCartForm :sku="sku"/>
       <!-- {{> catalog/add-to-wishlist-btn}}
       {{> catalog/reserve-in-store-btn}} -->
@@ -62,6 +63,7 @@ import productMixin from '@/mixins/productMixin';
 import ProductGallery from './ProductGallery.vue';
 import SocialMediaLinks from './SocialMediaLinks.vue';
 import DetailsSection from './DetailsSection.vue';
+import VariantSelector from './VariantSelector.vue';
 import AddToCartForm from './AddToCartForm.vue';
 import BasePrice from '../common/BasePrice.vue';
 
@@ -72,6 +74,7 @@ export default {
     SocialMediaLinks,
     AddToCartForm,
     BasePrice,
+    VariantSelector,
   },
 
   props: {
