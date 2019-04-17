@@ -43,18 +43,25 @@ export default {
 
   computed: {
     attributes() {
-      const blah = this.product.masterData.current.allVariants
+      return this.product.masterData.current.allVariants
         .flatMap(variant => Object.values(variant.attributes))
-        .filter(attr => typeof attr === 'object');
-      return blah.reduce(this.assemble, {});
+        .filter(attr => typeof attr === 'object')
+        .reduce(this.assemble, {});
+    },
+
+    attributeSku() {
+      return this.product.masterData.current.allVariants
+        .map(variant => variant.sku);
     },
 
     attributeCombination2Sku() {
-      return {
-        'black-34': 'M0E20000000DLPQ',
-        'white-34': 'M0E20000000DLPA',
-        'green-34': 'M0E20000000ED0A',
-      };
+      const input = {};
+      Object.values(this.attributes.color)
+        .forEach((value, i) => {
+          const combo = value.concat('-', this.attributes.size[i]);
+          input[combo] = this.attributeSku[i];
+        });
+      return input;
     },
   },
 
