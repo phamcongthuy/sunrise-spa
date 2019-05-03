@@ -15,6 +15,10 @@
 <script>
 export default {
   props: {
+    sku: {
+      type: String,
+      required: true,
+    },
     values: {
       type: Array,
       required: true,
@@ -33,6 +37,16 @@ export default {
     selected: '',
   }),
 
+  created() {
+    this.selected = this.sku;
+  },
+
+  watch: {
+    sku(newSku) {
+      this.selected = newSku;
+    },
+  },
+
   computed: {
     productVariant() {
       return this.product.masterData.current.variant.attributes;
@@ -48,8 +62,11 @@ export default {
       this.$router.push({ path: this.selected });
     },
 
-    generateAttributeCombination(attr) {
-      return attr.concat('-', this.productVariant.size.value);
+    generateAttributeCombination(attribute) {
+      return Object.values(this.productVariant)
+        .map(attr => attr.label)
+        .filter(value => typeof value === 'string').toString()
+        .concat('-', attribute);
     },
 
     attribute2sku(attr) {

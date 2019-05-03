@@ -9,6 +9,7 @@
         </p>
         <AttributeSelect :product="product"
                          :values="values"
+                         :sku="sku"
                          :attributeCombination2Sku="attributeCombination2Sku" />
       </li>
     </ul>
@@ -34,10 +35,19 @@ export default {
   }),
 
   methods: {
-    assemble(acc, currentItem) {
-      (acc[currentItem.name] || (acc[currentItem.name] = []))
-        .push(currentItem.value || currentItem.label);
+    groupValuesByAttribute(acc, currentItem) {
+      if (!acc[currentItem.name]) {
+        acc[currentItem.name] = [];
+      }
+      acc[currentItem.name].push(currentItem.value || currentItem.label);
       return acc;
+    },
+
+    generateCombination(attributes) {
+      return Object.values(attributes)
+        .map(attribute => attribute.label || attribute.value)
+        .filter(value => typeof value === 'string')
+        .join('-');
     },
   },
 
@@ -46,22 +56,20 @@ export default {
       return this.product.masterData.current.allVariants
         .flatMap(variant => Object.values(variant.attributes))
         .filter(attr => typeof attr === 'object')
-        .reduce(this.assemble, {});
-    },
-
-    attributeSku() {
-      return this.product.masterData.current.allVariants
-        .map(variant => variant.sku);
+        .reduce(this.groupValuesByAttribute, {});
     },
 
     attributeCombination2Sku() {
-      const input = {};
-      Object.values(this.attributes.color)
-        .forEach((value, i) => {
-          const combo = value.concat('-', this.attributes.size[i]);
-          input[combo] = this.attributeSku[i];
+      return this.product.masterData.current.allVariants
+        .map((variant) => {
+          const combi = this.generateCombination(variant.attributes);
+          const { sku } = variant;
+          return { combi, sku };
+        })
+        .reduce((acc, value) => {
+          acc[value.combi] = value.sku;
+          return acc;
         });
-      return input;
     },
   },
 
@@ -77,13 +85,13 @@ export default {
                   sku
                   attributes {
                     ...on mainProductType {
-                      size {
-                        value
-                        name
-                      }
-                       color {
+                      color {
                         key
                         label(locale: $locale)
+                        name
+                      }
+                      size {
+                        value
                         name
                       }
                     }
