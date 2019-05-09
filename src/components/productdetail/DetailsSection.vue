@@ -38,13 +38,12 @@
                 <li v-for="attribute in productAttributes"
                     data-test="product-attributes-list"
                     :key="attribute.name">
-                      <span v-if="attribute.name"
-                            class="attribute-name">
-                        {{ attribute.name }}:
-                      </span>
+                  <span class="attribute-name">
+                    {{ attribute.name }}:
+                  </span>
                   <span>
-                        {{ attribute.label || attribute.value }}
-                      </span>
+                    {{ attribute.label || attribute.value }}
+                  </span>
                 </li>
               </ul>
             </div>
@@ -113,7 +112,8 @@ export default {
 
   computed: {
     productAttributes() {
-      return this.product.masterData.current.variant.attributes;
+      return Object.values(this.product.masterData.current.variant.attributes)
+        .filter(attribute => attribute && typeof attribute === 'object');
     },
   },
 
