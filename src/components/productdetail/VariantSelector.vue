@@ -10,6 +10,7 @@
         <AttributeSelect :product="product"
                          :values="values"
                          :sku="sku"
+                         :name="name"
                          :attributeCombination2Sku="attributeCombination2Sku" />
       </li>
     </ul>
@@ -69,7 +70,7 @@ export default {
         .reduce((acc, value) => {
           acc[value.combi] = value.sku;
           return acc;
-        });
+        }, {});
     },
   },
 

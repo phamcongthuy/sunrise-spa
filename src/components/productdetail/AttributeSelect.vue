@@ -19,6 +19,10 @@ export default {
       type: String,
       required: true,
     },
+    name: {
+      type: String,
+      required: true,
+    },
     values: {
       type: Array,
       required: true,
@@ -48,10 +52,6 @@ export default {
   },
 
   computed: {
-    productVariant() {
-      return this.product.masterData.current.variant.attributes;
-    },
-
     distinctValues() {
       return new Set(this.values);
     },
@@ -62,17 +62,22 @@ export default {
       this.$router.push({ path: this.selected });
     },
 
-    generateAttributeCombination(attribute) {
-      return Object.values(this.productVariant)
-        .map(attr => attr.label)
-        .filter(value => typeof value === 'string').toString()
-        .concat('-', attribute);
+    generateAttributeCombination(optionAttrValue) {
+      return Object.values(this.product.masterData.current.variant.attributes)
+        .map((attr) => {
+          if (attr.name === this.name) {
+            return optionAttrValue;
+          }
+          return attr.value || attr.label;
+        })
+        .filter(value => value)
+        .join('-');
     },
 
-    attribute2sku(attr) {
-      return this.attributeCombination2Sku[this.generateAttributeCombination(attr)];
+    attribute2sku(optionAttrValue) {
+      const attributeCombination = this.generateAttributeCombination(optionAttrValue);
+      return this.attributeCombination2Sku[attributeCombination];
     },
   },
-
 };
 </script>
